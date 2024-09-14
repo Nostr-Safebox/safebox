@@ -147,7 +147,11 @@ class Wallet:
 
 
     def __repr__(self):
-        return f"wallet has {self.balance} sats"
+
+        out_str = f"wallet has {self.balance} sats"
+        out_str += f"\nnpub {self.pubkey_bech32}"
+        out_str += f"\nrelays: {self.relays}"
+        return out_str
     
     def powers_of_2_sum(self, amount: int):
         powers = []
@@ -562,7 +566,7 @@ class Wallet:
             'limit': 100,
             'authors': [self.pubkey_hex],
             'kinds': [37375],
-            'd':label_hash
+            'd':[label_hash]
             
         }]
         event =asyncio.run(self._async_get_wallet_info(FILTER))
@@ -594,7 +598,7 @@ class Wallet:
     # does a one off query to relay prints the events and exits
         # print("filter", filter[0]['d'])
         my_enc = NIP44Encrypt(self.k)
-        target_tag = filter[0]['d']
+        target_tag = filter[0]['#d']
         #print("target tag:", target_tag)
         event_select = None
         async with ClientPool([self.home_relay]) as c:
