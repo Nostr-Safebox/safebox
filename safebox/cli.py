@@ -29,6 +29,7 @@ relays  = [ "wss://nostr-pub.wellorder.net",
         ]
 mints   = ["https://mint.coinos.io"]
 wallet  = "default" 
+home_relay = "wss://relay.openbalance.app"
 home_relay = "wss://nos.lol"
 replicate_relays = ["wss://relay.nimo.cash", "wss://nostr-pub.wellorder.net"]
 logging_level = 10
