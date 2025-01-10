@@ -55,7 +55,13 @@ def powers_of_2_sum(amount):
         amount -= power
     return sorted(powers)
 
-
+def run_coroutine_outside_loop(coro):
+    try:
+        loop = asyncio.get_running_loop()
+    except RuntimeError:
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+    return loop.run_until_complete(coro)
 
 
     return "hello"
@@ -166,7 +172,9 @@ class Acorn:
             wallet_info_str = "None"
             self.home_mint = mints[0]
         
-        asyncio.run(self._load_proofs())
+        result = run_coroutine_outside_loop(self._load_proofs())
+
+        # asyncio.run(self._load_proofs())
         
 
         
@@ -845,6 +853,7 @@ class Acorn:
 
         # print("are we here?", label_hash)
         event =asyncio.run(self._async_get_wallet_info(FILTER, label_hash))
+        # event = run_coroutine_outside_loop(self._async_get_wallet_info(FILTER, label_hash))
         
         # print(event.data())
         try:
@@ -1097,6 +1106,7 @@ class Acorn:
         
        
         if mint:
+            mint.replace("https://","") #Just in case 
             url = f"https://{mint}/v1/mint/quote/bolt11"
         else:
             url = f"{self.home_mint}/v1/mint/quote/bolt11"
@@ -1413,6 +1423,8 @@ class Acorn:
         success_mint = True    
           
         if mint:
+            mint = mint.replace("https://","")
+            
             url = f"https://{mint}/v1/mint/quote/bolt11/{quote}"
         else:
              url = f"{self.home_mint}/v1/mint/quote/bolt11/{quote}" 
@@ -2588,7 +2600,7 @@ class Acorn:
         self.logger.debug("XXXXX swap multi each")
         self.add_proofs_obj(combined_proof_objs)
         
-        self._load_proofs()
+        asyncio.run(self._load_proofs())
         
                    
         

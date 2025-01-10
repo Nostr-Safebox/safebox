@@ -16,24 +16,24 @@ SQLModel.metadata.create_all(engine)
 
 async def periodic_task():
     while True:
-        # poll_for_payment()
+        # asyncio.create_task(poll_for_payment())
+        print("this is a periodic task")
+        
         await asyncio.sleep(3)  # Simulate work every 10 seconds
 
 
-def poll_for_payment_x():
+async def poll_for_payment():
 
-    
+    print("poll for payment")
     with Session(engine) as session:
         statement = select(PaymentQuote)
         payment_quotes = session.exec(statement)
         record = payment_quotes.first()
         try:
-            # acorn_obj = Acorn(nsec=each.nsec, mints=[each.mint], home_relay=HOME_RELAY, relays=RELAYS)
-            # acorn_obj = Acorn(nsec=each.nsec, relays=RELAYS, mints=MINTS, home_relay=HOME_RELAY, logging_level=LOGGING_LEVEL)
-            # profile_out = acorn_obj.get_profile()
+
             print(f"quote: {record}")
-            acorn_obj = Acorn(nsec=record.nsec, relays=RELAYS, mints=MINTS, home_relay=HOME_RELAY, logging_level=LOGGING_LEVEL)
-            print(acorn_obj.seed_phrase)
+            # acorn_obj = Acorn(nsec=record.nsec, relays=RELAYS, mints=MINTS, home_relay=HOME_RELAY, logging_level=LOGGING_LEVEL)
+            # print(acorn_obj.seed_phrase)
             
         except Exception as e:
             print(f"error: {e}")

@@ -14,7 +14,7 @@ from safebox.acorn import Acorn
 
 from app.appmodels import RegisteredSafebox, PaymentQuote
 from safebox.models import cliQuote
-from app.tasks import poll_for_payment_x
+from app.tasks import poll_for_payment
 
 # settings = Settings()
 
@@ -43,19 +43,23 @@ def get_info(request: Request):
     with Session(engine) as session:
         statement = select(PaymentQuote)
         payment_quotes = session.exec(statement)
-        record = payment_quotes.first()
-        try:
-            # acorn_obj = Acorn(nsec=each.nsec, mints=[each.mint], home_relay=HOME_RELAY, relays=RELAYS)
-            # acorn_obj = Acorn(nsec=each.nsec, relays=RELAYS, mints=MINTS, home_relay=HOME_RELAY, logging_level=LOGGING_LEVEL)
-            # profile_out = acorn_obj.get_profile()
-            print(f"record: {record}")
-            nsec_test = 'nsec187nscru0596h0s2yuzutf83sp8jkwxjk8ag4tzxkugvg7e7wmdyqgk0ayq'
-            acorn_obj = Acorn(nsec=record.nsec, mints=MINTS, home_relay=HOME_RELAY, logging_level=LOGGING_LEVEL)
-            print(acorn_obj.handle)
-            
-        except Exception as e:
-            print(f"error: {e}")
-        
+        records = payment_quotes.fetchall()
+        if records:
+            print("there are quotes!")
+        for record in records:
+            try:
+                acorn_obj = Acorn(nsec=record.nsec, mints=MINTS, home_relay=HOME_RELAY, logging_level=LOGGING_LEVEL)
+                profile_out = acorn_obj.get_profile()
+                print(f"record: {record} {profile_out}")
+                acorn_obj.check_quote(record.quote, record.amount, record.mint)
+                session.delete(record)
+                
+
+                print(acorn_obj.handle)
+                
+            except Exception as e:
+                print(f"error: {e}")
+        session.commit()
 
     return {"detail": request.url.hostname}
 
@@ -195,7 +199,8 @@ def acess_safebox(request: Request, access_key:str):
     return {"handle": safebox_found.handle,
             "npub": safebox_found.npub,
             "nsec": safebox_found.nsec,
-            "balance": acorn_obj.balance
+            "balance": acorn_obj.balance,
+            "seed_phrase": acorn_obj.seed_phrase
             }
            
           
