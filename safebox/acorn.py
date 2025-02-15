@@ -174,18 +174,19 @@ class Acorn:
                     self.unit = each[2]
                 if each[0] == "mint":
                     self.home_mint = each[1]
-                    print(f"home mint: {self.home_mint}")
+                    # print(f"home mint: {self.home_mint}")
                 if each[0] == "name":
                     self.name = each[1]
                 if each[0] == "local_currency":
                     self.local_currency = each[1]
-                    print(f"name: {self.name}")
+                    # print(f"name: {self.name}")
                 if each[0] == "owner":
                     self.owner = each[1]
-                    print(f"owner: {self.owner}")
+                    # print(f"owner: {self.owner}")
                 if each[0] == "privkey":                    
-                    print(f"privkey: {each[1]}")
-                    print(f"pubkey: {Keys(priv_k=each[1]).public_key_hex()}")
+                    # print(f"privkey: {each[1]}")
+                    # print(f"pubkey: {Keys(priv_k=each[1]).public_key_hex()}")
+                    pass
                 if each[0] == "seedphrase":
                     self.seed_phrase = each[1]
                 if each[0] == "local_currency":
@@ -466,7 +467,7 @@ class Acorn:
         # 1062 are shared notes
         # 1063 are official docs and credentials
 
-        if record_kind in [1059,1060,1061,1062,1063]:
+        if record_kind in [1059,1060,1061,1062,1063,21059,21060,21061,21062,21063]:
             
            if since:        
                 FILTER = [{
@@ -499,9 +500,9 @@ class Acorn:
         events.sort(reverse=True)
 
         for each in events:
-            print("x:", each.tags, each.kind, each.created_at)
+            # print("x:", each.tags, each.kind, each.created_at)
 
-            if record_kind in [1059, 1060, 1061, 1062]:
+            if record_kind in [1059,1060,1061,1062,1063,21059,21060,21061,21062,21063]:
                 # print(f"need to  unwrap {type(each.content)} {each.content} ")
                 try:
                     pass
@@ -4262,5 +4263,5 @@ if __name__ == "__main__":
     # url = ['wss://relay.0xchat.com','wss://relay.damus.io']
     # this relay seems to work the best with these kind of anon published events, atleast for now
     # others it seems to be a bit of hit and miss...
-    url = ['wss://relay.openbalance.app']
+    url = ['wss://relay.getsafebox.app']
     # asyncio.run(listen_notes(url))  

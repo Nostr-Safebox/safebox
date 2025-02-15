@@ -10,22 +10,10 @@
 
   const jsonUserData = {{ user_records | tojson }};
   const record_kind = parseInt("{{ record_kind }}");
-  var client_nprofile = "{{client_nprofile}}";
+  //There are two ways to receive client nauth 1) from scan, 2) from websockets
+  var client_nauth = "{{client_nauth}}";
 
-  const ws = new WebSocket("wss://{{request.url.hostname}}/safebox/wsrequesttransmittal");
-
-  ws.onopen = () => console.log("WebSocket connected");
-  ws.onmessage = (event) => {
-    console.log("Message received:", event.data);
-    const response = JSON.parse(event.data);  
-    client_nprofile = response.nprofile;
-    alert(`Client is authenticated! Ready to transmit files`);
-
-
-
-
-};
-ws.onclose = () => console.log("WebSocket closed");
+  
 
 </script>
 
@@ -66,8 +54,23 @@ async function createQRCode() {
     
     var data;
     var qr_img_func = document.getElementById("img_qr_display");
+
+    const ws = new WebSocket("wss://{{request.url.hostname}}/safebox/wsrequesttransmittal");
+
+    ws.onopen = () => console.log("WebSocket connected");
+    ws.onmessage = (event) => {
+  console.log("Message received:", event.data);
+  const response = JSON.parse(event.data);  
+  client_nauth = response.nauth;
+  client_name = response.name;
+// client_name = response.name;
+  alert(`Client is authenticated! ${client_name} Ready to transmit files`); 
+  ws.close()
+  };
+  ws.onclose = () => console.log("WebSocket closed");
   
     qr_img_func.src="/img/circle-256.gif";
+
     
 
    await fetch('/safebox/nauth', {
@@ -223,12 +226,12 @@ alert(`${parsedResult.status} ${parsedResult.detail}`);
 
 async function transmitToNprofile() {
 
-    if (client_nprofile=="None") {
+    if (client_nauth=="None") {
       alert(`Please scan client QR Code!`);
       return;
     }
 
-    if (confirm(`Are you sure you want to send to: ${client_nprofile}?`)) {
+    if (confirm(`Are you sure you want to send to: ${client_nauth}?`)) {
       // alert(`Sending...`);
     } else {return;}
   
@@ -236,7 +239,7 @@ async function transmitToNprofile() {
    
 
 
-  const submit_data = {"nprofile": client_nprofile, "kind":32227 };
+  const submit_data = {"nauth": client_nauth, "kind":32227 };
 
    
 
@@ -271,8 +274,8 @@ setDarkMode();
     
  <img id="img_qr_display" onclick="createQRCode()"  src="/img/logo.png" >
 <br><br>
-{% if client_nprofile %}
-{{client_nprofile[:20] }}...{{ client_nprofile[-15:]}} 
+{% if client_nauth %}
+{{client_nauth[:20] }}...{{ client_nauth[-15:]}} 
 {% endif %}    
      
         

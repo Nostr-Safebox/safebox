@@ -26,11 +26,13 @@ from app.config import Settings
 settings = Settings()
 templates = Jinja2Templates(directory="app/templates")
 
-RELAYS = ['wss://relay.openbalance.app']
-MINTS = ['https://mint.nimo.cash']
-# HOME_RELAY = 'wss://relay.openbalance.app'
+# RELAYS = ['wss://relay.getsafebox.app']
+RELAYS = settings.RELAYS
+# MINTS = ['https://mint.nimo.cash']
+MINTS = settings.MINTS
+# HOME_RELAY = 'wss://relay.getsafebox.app'
 LOGGING_LEVEL = 10
-HOME_MINT = 'https://mint.nimo.cash'
+HOME_MINT = settings.HOME_MINT
 
 
 service_key_obj = Keys(priv_k=settings.SERVICE_SECRET_KEY)
